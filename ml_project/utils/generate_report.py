@@ -51,6 +51,7 @@ def save_categorical_graphs(raw_data: pd.DataFrame, output_dir: Path) -> NoRetur
 def save_data_stats(raw_data: pd.DataFrame, output_dir: Path) -> NoReturn:
     descr = raw_data.describe()
     descr.loc["nunique", :] = raw_data.nunique()
+    descr.loc["dtype", :] = raw_data.dtypes
     descr = descr.round(3)
     descr.to_csv(output_dir / "stats.csv")
 
