@@ -6,11 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-REPORT_DIR = Path("reports")
-
-CATEGORICAL_COLUMNS = ["sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal"]
-
-REAL_COLUMNS = ["age", "trestbps", "chol", "thalach", "oldpeak"]
+from src.constants import CATEGORICAL_COLUMNS, LABEL_COL, REAL_COLUMNS, REPORT_DIR
 
 
 def save_pairplot(raw_data: pd.DataFrame, output_dir: Path) -> NoReturn:
@@ -30,7 +26,7 @@ def save_real_graphs(raw_data: pd.DataFrame, output_dir: Path) -> NoReturn:
     fig.set_figwidth(16)
     for i, col in enumerate(REAL_COLUMNS):
         sns.boxplot(
-            x=raw_data[col], y=raw_data["target"], ax=axs.ravel()[i], orient="h"
+            x=raw_data[col], y=raw_data[LABEL_COL], ax=axs.ravel()[i], orient="h"
         )
         axs.ravel()[i].grid(True)
     plt.savefig(output_dir / "realplots.png")
@@ -41,7 +37,7 @@ def save_categorical_graphs(raw_data: pd.DataFrame, output_dir: Path) -> NoRetur
     fig.set_figheight(14)
     fig.set_figwidth(16)
     for i, col in enumerate(CATEGORICAL_COLUMNS):
-        sns.countplot(x=raw_data[col], hue=raw_data["target"], ax=axs.ravel()[i])
+        sns.countplot(x=raw_data[col], hue=raw_data[LABEL_COL], ax=axs.ravel()[i])
         axs.ravel()[i].grid(True)
     sns.countplot(x=raw_data["target"], ax=axs.ravel()[-1])
     axs.ravel()[-1].grid(True)
@@ -67,7 +63,13 @@ def main():
     arguments = parser.parse_args()
     output_dir = REPORT_DIR / arguments.output
     output_dir.mkdir(parents=True, exist_ok=True)
-    df = pd.read_csv(arguments.input)
+
+    required_cols = list(CATEGORICAL_COLUMNS.keys())
+    required_cols.extend(REAL_COLUMNS.keys())
+    required_cols.append(LABEL_COL)
+
+    df = pd.read_csv(arguments.input, usecols=required_cols)
+
     save_data_stats(df, output_dir)
     save_categorical_graphs(df, output_dir)
     save_real_graphs(df, output_dir)
