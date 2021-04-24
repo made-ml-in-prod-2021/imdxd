@@ -12,4 +12,4 @@ class FeatureParams:
     cat_cols: List[str] = field(
         default_factory=["sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal"]
     )
-    zero_cols: List[str] = field(default_factory=["oldpeak"])
+    zero_cols: List[str] = field(default_factory=[])
