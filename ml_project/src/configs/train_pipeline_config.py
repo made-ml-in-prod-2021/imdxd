@@ -10,8 +10,7 @@ from .train_config import TrainingParams
 @dataclass()
 class TrainingPipelineParams:
     raw_data: str
-    model_path: str
-    metric_path: str
+    experiment_name: str
     random_state: int
     splitting_params: SplittingParams
     feature_params: FeatureParams

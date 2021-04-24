@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+from pathlib import Path
 
 import pandas as pd
 
@@ -60,11 +61,17 @@ def train_pipeline(training_pipeline_params: TrainingPipelineParams):
         threshold=training_pipeline_params.threshold,
     )
 
-    with open(training_pipeline_params.metric_path, "w") as metric_file:
+    experiment_path = Path(f"experiments/{training_pipeline_params.experiment_name}")
+    experiment_path.mkdir(parents=True, exist_ok=False)
+
+    metric_path = experiment_path / "metric.json"
+    model_path = experiment_path / "model.pkl"
+
+    with open(metric_path, "w") as metric_file:
         json.dump(metrics, metric_file)
     logger.info(f"metrics is {metrics}")
 
-    serialize_model(model, training_pipeline_params.model_path)
+    serialize_model(model, model_path)
 
 
 def main():

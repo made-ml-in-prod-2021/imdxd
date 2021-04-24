@@ -1,4 +1,5 @@
 import pickle
+from pathlib import Path
 from typing import NoReturn
 
 from sklearn.compose import ColumnTransformer
@@ -72,6 +73,6 @@ def get_model(
     return pipeline
 
 
-def serialize_model(model: Pipeline, output: str) -> NoReturn:
+def serialize_model(model: Pipeline, output: Path) -> NoReturn:
     with open(output, "wb") as f:
         pickle.dump(model, f)
