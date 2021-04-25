@@ -18,13 +18,21 @@ logger = logging.getLogger("ml_project")
 
 
 @dataclass()
-class SerilizedModel:
+class SerializedModel:
+    """
+    Data class for storing fitted pipeline
+    """
 
     pipeline: Pipeline
     zero_cols: List[str]
 
 
 def get_real_feature_pipe(params: TrainingParams) -> Pipeline:
+    """
+    Get pipeline for real value columns
+    :param params: params for training
+    :return: pipeline for real data processing
+    """
     pipe = Pipeline(
         [
             ("imputer", SimpleImputer(strategy=params.imput_strategy)),
@@ -35,6 +43,11 @@ def get_real_feature_pipe(params: TrainingParams) -> Pipeline:
 
 
 def get_cat_feature_pipe(params: TrainingParams) -> Pipeline:
+    """
+    Get pipeline for categorical columns
+    :param params: params for training
+    :return: pipeline for categorical data processing
+    """
     pipe = Pipeline(
         [
             ("encoder", MeanEncoder(params.mean_alpha)),
@@ -44,9 +57,16 @@ def get_cat_feature_pipe(params: TrainingParams) -> Pipeline:
     return pipe
 
 
-def get_model(
+def get_full_pipeline(
     train_params: TrainingParams, feature_params: FeatureParams, random_state: int
 ) -> Pipeline:
+    """
+    Get pipeline for full data processing
+    :param train_params: params for training
+    :param feature_params: params for columns definitions
+    :param random_state: random state for reproducibility
+    :return: full pipeline for data processing
+    """
     if train_params.model_type == "RandomForestClassifier":
         model = RandomForestClassifier(n_estimators=100, random_state=random_state)
     elif train_params.model_type == "LogisticRegression":
@@ -87,12 +107,24 @@ def get_model(
 
 
 def serialize_pipe(model: Pipeline, output: Path, params: FeatureParams) -> NoReturn:
+    """
+    Saving pipeline
+    :param model: full model pipeline
+    :param output: path to save
+    :param params: columns definitions
+    :return: Nothing
+    """
     logger.debug("Serialized model to: %s" % output)
     with open(output, "wb") as f:
-        pickle.dump(SerilizedModel(pipeline=model, zero_cols=params.zero_cols), f)
+        pickle.dump(SerializedModel(pipeline=model, zero_cols=params.zero_cols), f)
 
 
-def deserialize_pipe(input_: Path) -> SerilizedModel:
+def deserialize_pipe(input_: Path) -> SerializedModel:
+    """
+    Loading pipeline
+    :param input_: path to load
+    :return: Serialized pipeline class with fitted model and columns definitions
+    """
     logger.debug("Deserialized model from: %s" % input_)
     with open(input_, "rb") as f:
         return pickle.load(f)

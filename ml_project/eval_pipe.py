@@ -22,6 +22,11 @@ logger.addHandler(stdout_handler)
 
 
 def eval_pipeline(params: EvaluationParams):
+    """
+    Pipeline for get prediction from data
+    :param params: parameters for evaluation
+    :return: Nothing
+    """
 
     logger.info("Loading data")
     data = pd.read_csv(DATA_DIR / params.raw_data)
@@ -43,6 +48,10 @@ def eval_pipeline(params: EvaluationParams):
 
 
 def main():
+    """
+    Wrapper for arguments reading and start evaluation
+    :return: Nothing
+    """
     parser = argparse.ArgumentParser(prog="script for taking predictions from data")
     parser.add_argument(
         "--config", dest="config_path", help="path to pipeline config", required=True

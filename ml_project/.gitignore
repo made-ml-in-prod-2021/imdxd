@@ -1,4 +1,12 @@
+# not exclude
+!.gitkeep
+
+# generated data
 */.ipynb_checkpoints
 *.log
 *.csv
 *.png
+data/*
+experiments/*
+logs/*
+reports/*

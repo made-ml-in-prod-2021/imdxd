@@ -10,17 +10,35 @@ from src.constants import CATEGORICAL_COLUMNS, DATA_DIR, LABEL_COL, REAL_COLUMNS
 
 
 def save_pairplot(raw_data: pd.DataFrame, output_dir: Path) -> NoReturn:
+    """
+    Calculate and store data pairplot
+    :param raw_data: data to compute
+    :param output_dir: directory to save
+    :return: Noting
+    """
     sns.pairplot(raw_data[REAL_COLUMNS])
     plt.savefig(output_dir / "pairplot.png")
 
 
 def save_heatmap(raw_data: pd.DataFrame, output_dir: Path) -> NoReturn:
+    """
+    Calculate and store data real columns heatmap
+    :param raw_data: data to compute
+    :param output_dir: directory to save
+    :return: Noting
+    """
     plt.figure(figsize=(10, 9))
     sns.heatmap(raw_data[REAL_COLUMNS].corr(), annot=True, linewidths=0.3)
     plt.savefig(output_dir / "heatmap.png")
 
 
 def save_real_graphs(raw_data: pd.DataFrame, output_dir: Path) -> NoReturn:
+    """
+    Calculate and store data real columns plots
+    :param raw_data: data to compute
+    :param output_dir: directory to save
+    :return: Noting
+    """
     fig, axs = plt.subplots(3, 2)
     fig.set_figheight(10)
     fig.set_figwidth(16)
@@ -33,6 +51,12 @@ def save_real_graphs(raw_data: pd.DataFrame, output_dir: Path) -> NoReturn:
 
 
 def save_categorical_graphs(raw_data: pd.DataFrame, output_dir: Path) -> NoReturn:
+    """
+    Calculate and store data categorical columns plots
+    :param raw_data: data to compute
+    :param output_dir: directory to save
+    :return: Noting
+    """
     fig, axs = plt.subplots(3, 3)
     fig.set_figheight(14)
     fig.set_figwidth(16)
@@ -45,6 +69,12 @@ def save_categorical_graphs(raw_data: pd.DataFrame, output_dir: Path) -> NoRetur
 
 
 def save_data_stats(raw_data: pd.DataFrame, output_dir: Path) -> NoReturn:
+    """
+    Calculate and store data describe statistic
+    :param raw_data: data to compute
+    :param output_dir: directory to save
+    :return: Noting
+    """
     descr = raw_data.describe()
     descr.loc["nunique", :] = raw_data.nunique()
     descr.loc["dtype", :] = raw_data.dtypes
@@ -53,6 +83,10 @@ def save_data_stats(raw_data: pd.DataFrame, output_dir: Path) -> NoReturn:
 
 
 def main():
+    """
+    Wrapper for args parsing and calling functions to report
+    :return: Nothing
+    """
     parser = argparse.ArgumentParser(prog="data reports generation")
     parser.add_argument(
         "--input", type=str, help="path to dataset for reports", required=True

@@ -7,6 +7,10 @@ from src.constants import CATEGORICAL_COLUMNS, DATA_DIR, REAL_COLUMNS, LABEL_COL
 
 
 def main():
+    """
+    Parsing args and generating new data
+    :return: Nothing
+    """
     parser = argparse.ArgumentParser(prog="simulation data generation")
     parser.add_argument("--size", type=int, help="size of new data", required=True)
     parser.add_argument(

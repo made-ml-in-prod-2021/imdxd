@@ -6,8 +6,8 @@ import pandas as pd
 
 from src import (
     add_zero_features,
-    evaluate_pipe,
-    get_model,
+    compute_metrics,
+    get_full_pipeline,
     serialize_pipe,
     predict_proba,
     split_train_val_data,
@@ -29,6 +29,11 @@ logger.addHandler(stdout_handler)
 
 
 def train_pipeline(training_pipeline_params: TrainingPipelineParams):
+    """
+    Training model, computing metrics and storing model
+    :param training_pipeline_params: params for training
+    :return: Nothing
+    """
     logger.info(f"start train pipeline with params {training_pipeline_params}")
 
     data = pd.read_csv(training_pipeline_params.raw_data)
@@ -52,7 +57,7 @@ def train_pipeline(training_pipeline_params: TrainingPipelineParams):
     train_df.to_csv(experiment_path / "train.csv", index=False)
     val_df.to_csv(experiment_path / "val.csv", index=False)
 
-    model = get_model(
+    model = get_full_pipeline(
         training_pipeline_params.train_params,
         training_pipeline_params.feature_params,
         training_pipeline_params.random_state,
@@ -66,7 +71,7 @@ def train_pipeline(training_pipeline_params: TrainingPipelineParams):
     logger.info("Start prediction")
 
     predicts = predict_proba(model, val_df)
-    metrics = evaluate_pipe(
+    metrics = compute_metrics(
         predicts,
         val_df[training_pipeline_params.label],
         threshold=training_pipeline_params.threshold,
@@ -85,6 +90,10 @@ def train_pipeline(training_pipeline_params: TrainingPipelineParams):
 
 
 def main():
+    """
+    Wrapper for arguments reading and start training
+    :return: Nothing
+    """
     parser = argparse.ArgumentParser(prog="script for training and computing metrics")
     parser.add_argument(
         "--config", dest="config_path", help="path to pipeline config", required=True
