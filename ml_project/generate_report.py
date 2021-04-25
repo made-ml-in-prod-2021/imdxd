@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from src.constants import CATEGORICAL_COLUMNS, LABEL_COL, REAL_COLUMNS, REPORT_DIR
+from src.constants import CATEGORICAL_COLUMNS, DATA_DIR, LABEL_COL, REAL_COLUMNS, REPORT_DIR
 
 
 def save_pairplot(raw_data: pd.DataFrame, output_dir: Path) -> NoReturn:
@@ -68,7 +68,7 @@ def main():
     required_cols.extend(REAL_COLUMNS.keys())
     required_cols.append(LABEL_COL)
 
-    df = pd.read_csv(arguments.input, usecols=required_cols)
+    df = pd.read_csv(DATA_DIR / arguments.input, usecols=required_cols)
 
     save_data_stats(df, output_dir)
     save_categorical_graphs(df, output_dir)

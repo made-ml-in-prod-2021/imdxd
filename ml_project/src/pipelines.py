@@ -1,6 +1,8 @@
+import logging
 import pickle
+from dataclasses import dataclass
 from pathlib import Path
-from typing import NoReturn
+from typing import List, NoReturn
 
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
@@ -11,6 +13,15 @@ from sklearn.preprocessing import StandardScaler
 
 from src.configs import FeatureParams, TrainingParams
 from .encoders import MeanEncoder
+
+logger = logging.getLogger("ml_project")
+
+
+@dataclass()
+class SerilizedModel:
+
+    pipeline: Pipeline
+    zero_cols: List[str]
 
 
 def get_real_feature_pipe(params: TrainingParams) -> Pipeline:
@@ -45,6 +56,12 @@ def get_model(
     else:
         raise NotImplementedError()
 
+    cat_cols = feature_params.cat_cols
+    cat_cols.extend([f"zero_{col}" for col in feature_params.zero_cols])
+
+    logger.debug("Cat cols are: %s" % ", ".join(cat_cols))
+    logger.debug("Real cols are: %s" % ", ".join(feature_params.real_cols))
+
     pipeline = Pipeline(
         (
             [
@@ -57,11 +74,7 @@ def get_model(
                                 get_real_feature_pipe(train_params),
                                 feature_params.real_cols,
                             ),
-                            (
-                                "cat",
-                                get_cat_feature_pipe(train_params),
-                                feature_params.cat_cols,
-                            ),
+                            ("cat", get_cat_feature_pipe(train_params), cat_cols,),
                         ]
                     ),
                 ),
@@ -73,6 +86,13 @@ def get_model(
     return pipeline
 
 
-def serialize_model(model: Pipeline, output: Path) -> NoReturn:
+def serialize_pipe(model: Pipeline, output: Path, params: FeatureParams) -> NoReturn:
+    logger.debug("Serialized model to: %s" % output)
     with open(output, "wb") as f:
-        pickle.dump(model, f)
+        pickle.dump(SerilizedModel(pipeline=model, zero_cols=params.zero_cols), f)
+
+
+def deserialize_pipe(input_: Path) -> SerilizedModel:
+    logger.debug("Deserialized model from: %s" % input_)
+    with open(input_, "rb") as f:
+        return pickle.load(f)

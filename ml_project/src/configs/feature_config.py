@@ -5,6 +5,9 @@ from dataclasses import dataclass, field
 
 @dataclass()
 class FeatureParams:
+    """
+    Class for config with columns definitions
+    """
 
     real_cols: List[str] = field(
         default_factory=["age", "trestbps", "chol", "thalach", "oldpeak"]

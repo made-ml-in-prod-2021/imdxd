@@ -1,3 +1,7 @@
+"""
+Module with constants for application
+"""
+
 from pathlib import Path
 
 from dataclasses import dataclass
@@ -42,6 +46,10 @@ IS_ZERO_COLS = ["oldpeak"]
 
 LABEL_COL = "target"
 
-DATA_DIR = Path("../data/raw_data")
+DATA_DIR = Path("data/raw_data")
 
-REPORT_DIR = Path("../reports")
+REPORT_DIR = Path("reports")
+
+ARTIFACT_DIR = Path("experiments")
+
+PROCEED_DIR = Path("data/proceed_data")
