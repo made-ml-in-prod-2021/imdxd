@@ -3,7 +3,7 @@ import argparse
 import numpy as np
 import pandas as pd
 
-from src.constants import CATEGORICAL_COLUMNS, DATA_DIR, REAL_COLUMNS, LABEL_COL
+from src.constants import CATEGORICAL_COLUMNS, TEST_DATA_DIR, REAL_COLUMNS, LABEL_COL
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
         "--output", type=str, help="filename for storing data", required=True
     )
     arguments = parser.parse_args()
-    save_path = DATA_DIR / arguments.output
+    save_path = TEST_DATA_DIR / arguments.output
     df = pd.DataFrame({LABEL_COL: np.random.randint(0, 2, arguments.size)})
 
     for distr in REAL_COLUMNS.values():

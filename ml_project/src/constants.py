@@ -53,3 +53,5 @@ REPORT_DIR = Path("reports")
 ARTIFACT_DIR = Path("experiments")
 
 PROCEED_DIR = Path("data/proceed_data")
+
+TEST_DATA_DIR = Path("tests/test_data")
