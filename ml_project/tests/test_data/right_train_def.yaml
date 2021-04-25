@@ -1,14 +1,13 @@
 raw_data: "heart.csv"
-experiment_name: "rf"
-random_state: 1
+experiment_name: "gbm"
+random_state: 42
 label: "target"
 splitting_params:
-  val_size: 0.3
-  stratify: false
+  val_size: 0.2
 train_params:
-  model_type: "RandomForestClassifier"
-  mean_alpha: 20
-  imput_strategy: "median"
+  model_type: "GradientBoostingClassifier"
+  mean_alpha: 10
+  imput_strategy: "mean"
 feature_params:
   cat_cols:
     - "sex"
@@ -24,4 +23,6 @@ feature_params:
     - "trestbps"
     - "chol"
     - "thalach"
+    - "oldpeak"
+  zero_cols:
     - "oldpeak"

@@ -13,7 +13,7 @@ from src import (
     split_train_val_data,
 )
 from src.configs import TrainingPipelineParams, read_training_pipeline_params
-from src.constants import ARTIFACT_DIR
+from src.constants import ARTIFACT_DIR, DATA_DIR
 
 logger = logging.getLogger("ml_project")
 logger.setLevel(logging.DEBUG)
@@ -36,7 +36,7 @@ def train_pipeline(training_pipeline_params: TrainingPipelineParams):
     """
     logger.info(f"start train pipeline with params {training_pipeline_params}")
 
-    data = pd.read_csv(training_pipeline_params.raw_data)
+    data = pd.read_csv(DATA_DIR / training_pipeline_params.raw_data)
 
     experiment_path = ARTIFACT_DIR / training_pipeline_params.experiment_name
     experiment_path.mkdir(parents=True, exist_ok=False)
