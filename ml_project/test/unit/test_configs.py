@@ -3,13 +3,13 @@ from marshmallow.exceptions import ValidationError
 
 from src.configs import read_evaluation_pipeline_params, read_training_pipeline_params
 
-TEST_WRONG_EVAL_CONFIG_PATH = "tests/test_data/wrong_evaluation.yaml"
-TEST_RIGHT_DEFAULT_EVAL_CONFIG_PATH = "tests/test_data/right_evaluation_def.yaml"
-TEST_RIGHT_EVAL_CONFIG_PATH = "tests/test_data/right_evaluation.yaml"
+TEST_WRONG_EVAL_CONFIG_PATH = "test/test_data/wrong_evaluation.yaml"
+TEST_RIGHT_DEFAULT_EVAL_CONFIG_PATH = "test/test_data/right_evaluation_def.yaml"
+TEST_RIGHT_EVAL_CONFIG_PATH = "test/test_data/right_evaluation.yaml"
 
-TEST_WRONG_TRAIN_CONFIG_PATH = "tests/test_data/wrong_train.yaml"
-TEST_RIGHT_DEFAULT_TRAIN_CONFIG_PATH = "tests/test_data/right_train_def.yaml"
-TEST_RIGHT_TRAIN_CONFIG_PATH = "tests/test_data/right_train.yaml"
+TEST_WRONG_TRAIN_CONFIG_PATH = "test/test_data/wrong_train.yaml"
+TEST_RIGHT_DEFAULT_TRAIN_CONFIG_PATH = "test/test_data/right_train_def.yaml"
+TEST_RIGHT_TRAIN_CONFIG_PATH = "test/test_data/right_train.yaml"
 
 
 @pytest.mark.parametrize(

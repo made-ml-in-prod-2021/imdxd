@@ -9,6 +9,7 @@ class MeanEncoder(BaseEstimator, TransformerMixin):
     Mean encoder with smoothing regularization
     https://necromuralist.github.io/kaggle-competitions/posts/mean-encoding/
     """
+
     def __init__(self, alpha: int = 20) -> NoReturn:
         super(MeanEncoder, self).__init__()
         self.alpha = alpha
@@ -24,9 +25,10 @@ class MeanEncoder(BaseEstimator, TransformerMixin):
         """
         self.global_mean = y.mean()
         for col in x.columns:
+            target_stat = y.groupby(x[col]).agg(["sum", "count"])
             col_dict = (
-                y.groupby(x[col]).sum()
-                + self.global_mean * self.alpha / (x.shape[0] + self.alpha)
+                (target_stat["sum"] + self.global_mean * self.alpha)
+                / (target_stat["count"] + self.alpha)
             ).to_dict()
             self.cols_values[col] = col_dict
         return self
