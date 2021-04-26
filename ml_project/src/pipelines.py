@@ -1,9 +1,9 @@
 import logging
 import pickle
-from dataclasses import dataclass
 from pathlib import Path
 from typing import List, NoReturn
 
+from dataclasses import dataclass
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.impute import SimpleImputer
@@ -24,7 +24,7 @@ class SerializedModel:
     """
 
     pipeline: Pipeline
-    zero_cols: List[str]
+    feature_params: FeatureParams
 
 
 def get_real_feature_pipe(params: TrainingParams) -> Pipeline:
@@ -107,6 +107,16 @@ def get_full_pipeline(
     return pipeline
 
 
+def get_column_order(params: FeatureParams) -> List[str]:
+    """
+    Return order of data columns
+    :param params: parameters of columns
+    :return: ordered columns
+    """
+    renamed_zero_cols = [f"zero_{col}" for col in params.zero_cols]
+    return params.real_cols + params.cat_cols + renamed_zero_cols
+
+
 def serialize_pipe(model: Pipeline, output: Path, params: FeatureParams) -> NoReturn:
     """
     Saving pipeline
@@ -117,7 +127,7 @@ def serialize_pipe(model: Pipeline, output: Path, params: FeatureParams) -> NoRe
     """
     logger.debug("Serialized model to: %s" % output)
     with open(output, "wb") as f:
-        pickle.dump(SerializedModel(pipeline=model, zero_cols=params.zero_cols), f)
+        pickle.dump(SerializedModel(pipeline=model, feature_params=params), f)
 
 
 def deserialize_pipe(input_: Path) -> SerializedModel:

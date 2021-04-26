@@ -40,7 +40,9 @@ def generate_data(size: int) -> pd.DataFrame:
     data = generate_real(size)
     data.update(generate_category(size))
     data = pd.DataFrame(data)
-    data[LABEL_COL] = ((data["oldpeak"] == 0) | (data["trestbps"] > 150)).astype(np.uint8)
+    data[LABEL_COL] = ((data["oldpeak"] == 0) | (data["trestbps"] > 150)).astype(
+        np.uint8
+    )
     return data
 
 

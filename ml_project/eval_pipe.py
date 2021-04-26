@@ -4,7 +4,7 @@ import logging
 import numpy as np
 import pandas as pd
 
-from src import add_zero_features, deserialize_pipe, predict_proba
+from src import add_zero_features, deserialize_pipe, get_column_order, predict_proba
 from src.configs import EvaluationParams, read_evaluation_pipeline_params
 from src.constants import ARTIFACT_DIR, DATA_DIR, PROCEED_DIR
 
@@ -36,10 +36,11 @@ def eval_pipeline(params: EvaluationParams):
     model = deserialize_pipe(ARTIFACT_DIR / params.model / "model.pkl")
 
     logger.info("Add zero features")
-    data = add_zero_features(data, model.zero_cols)
+    data = add_zero_features(data, model.feature_params.zero_cols)
+    column_order = get_column_order(model.feature_params)
 
     logger.info("Start prediction")
-    predictions = predict_proba(model.pipeline, data)
+    predictions = predict_proba(model.pipeline, data[column_order])
 
     data["Prediction"] = (predictions > params.threshold).astype(np.uint8)
 
@@ -61,5 +62,5 @@ def main():
     eval_pipeline(params)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

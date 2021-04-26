@@ -11,6 +11,7 @@ from src.constants import CATEGORICAL_COLUMNS, LABEL_COL, REAL_COLUMNS
 from src.pipelines import (
     get_real_feature_pipe,
     get_cat_feature_pipe,
+    get_column_order,
     get_full_pipeline,
     serialize_pipe,
     deserialize_pipe,
@@ -33,7 +34,7 @@ def feature_params():
     params = FeatureParams(
         cat_cols=list(CATEGORICAL_COLUMNS.keys()),
         real_cols=list(REAL_COLUMNS.keys()),
-        zero_cols=["oldpeak"],
+        zero_cols=[],
     )
     return params
 
@@ -74,11 +75,20 @@ def test_serialize_pipe(tmp_path, training_params, feature_params):
     assert os.path.isfile(tmp_path / "model.pkl"), "No saved model"
     with open(tmp_path / "model.pkl", "rb") as fio:
         loaded = pickle.load(fio)
-        assert loaded.zero_cols == feature_params.zero_cols, "Wrong zero cols"
+        assert loaded.feature_params == feature_params, "Wrong zero cols"
         assert loaded.pipeline.named_steps["model"].n_classes_ == 2, "Model not fitted"
 
 
-def test_deserialize_pipe():
+def test_deserialize_pipe(feature_params):
     pipe = deserialize_pipe(TEST_MODEL)
-    assert pipe.zero_cols == [], "Wrong zero cols"
+    assert pipe.feature_params == feature_params, "Wrong feature params"
     assert pipe.pipeline.named_steps["model"].n_classes_ == 2, "Wrong model classes"
+
+
+def test_get_column_order(feature_params):
+    col_order = get_column_order(feature_params)
+    renamed_zero_cols = [f"zero_{col}" for col in feature_params.zero_cols]
+    assert (
+        col_order
+        == feature_params.real_cols + feature_params.cat_cols + renamed_zero_cols
+    ), "Wrong column order"

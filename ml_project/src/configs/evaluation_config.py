@@ -8,6 +8,7 @@ class EvaluationParams:
     """
     Class for evaluation pipeline config
     """
+
     model: str
     raw_data: str
     proceed_data: str

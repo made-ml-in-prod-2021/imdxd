@@ -12,6 +12,7 @@ class TrainingPipelineParams:
     """
     Class with full training pipeline config (splitting, column definition, training)
     """
+
     raw_data: str
     experiment_name: str
     random_state: int

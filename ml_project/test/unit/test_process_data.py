@@ -4,7 +4,6 @@ import pytest
 from src.configs import SplittingParams
 from src.process_data import add_zero_features, split_train_val_data
 
-
 TEST_DATA = pd.DataFrame(
     {
         "f1": [3, 2, 2, 2, 1, 1, 1, 0, 0, 0],

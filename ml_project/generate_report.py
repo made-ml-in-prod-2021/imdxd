@@ -6,7 +6,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from src.constants import CATEGORICAL_COLUMNS, DATA_DIR, LABEL_COL, REAL_COLUMNS, REPORT_DIR
+from src.constants import (
+    CATEGORICAL_COLUMNS,
+    DATA_DIR,
+    LABEL_COL,
+    REAL_COLUMNS,
+    REPORT_DIR,
+)
 
 
 def save_pairplot(raw_data: pd.DataFrame, output_dir: Path) -> NoReturn:

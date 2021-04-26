@@ -1,5 +1,6 @@
-import pytest
 import pandas as pd
+import pytest
+
 from src.encoders import MeanEncoder
 
 TEST_DATA = pd.DataFrame({"cat1": [1, 1, 0, 0], "cat2": [1, 0, 0, 1]})

@@ -7,6 +7,7 @@ import pandas as pd
 from src import (
     add_zero_features,
     compute_metrics,
+    get_column_order,
     get_full_pipeline,
     serialize_pipe,
     predict_proba,
@@ -44,13 +45,9 @@ def train_pipeline(pipe_params: TrainingPipelineParams):
     logger.info(f"data.shape is {data.shape}")
 
     data = add_zero_features(data, pipe_params.feature_params.zero_cols)
-    pipe_params.feature_params.cat_cols.extend(pipe_params.feature_params.zero_cols)
 
     train_df, val_df = split_train_val_data(
-        data,
-        pipe_params.splitting_params,
-        pipe_params.label,
-        pipe_params.random_state,
+        data, pipe_params.splitting_params, pipe_params.label, pipe_params.random_state,
     )
     logger.info(f"train_df.shape is {train_df.shape}")
     logger.info(f"val_df.shape is {val_df.shape}")
@@ -59,23 +56,21 @@ def train_pipeline(pipe_params: TrainingPipelineParams):
     val_df.to_csv(experiment_path / "val.csv", index=False)
 
     model = get_full_pipeline(
-        pipe_params.train_params,
-        pipe_params.feature_params,
-        pipe_params.random_state,
+        pipe_params.train_params, pipe_params.feature_params, pipe_params.random_state,
     )
 
     logger.info("Start training model")
 
-    model = model.fit(train_df, train_df[pipe_params.label])
+    column_order = get_column_order(pipe_params.feature_params)
+
+    model = model.fit(train_df[column_order], train_df[pipe_params.label])
 
     logger.info("Model training finished")
     logger.info("Start prediction")
 
-    predicts = predict_proba(model, val_df)
+    predicts = predict_proba(model, val_df[column_order])
     metrics = compute_metrics(
-        predicts,
-        val_df[pipe_params.label],
-        threshold=pipe_params.threshold,
+        predicts, val_df[pipe_params.label], threshold=pipe_params.threshold,
     )
 
     logger.info("Prediction finished")
