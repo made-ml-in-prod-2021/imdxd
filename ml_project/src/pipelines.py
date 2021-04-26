@@ -76,10 +76,7 @@ def get_full_pipeline(
     else:
         raise NotImplementedError()
 
-    cat_cols = feature_params.cat_cols
-    cat_cols.extend([f"zero_{col}" for col in feature_params.zero_cols])
-
-    logger.debug("Cat cols are: %s" % ", ".join(cat_cols))
+    logger.debug("Cat cols are: %s" % ", ".join(feature_params.cat_cols))
     logger.debug("Real cols are: %s" % ", ".join(feature_params.real_cols))
 
     pipeline = Pipeline(
@@ -94,7 +91,11 @@ def get_full_pipeline(
                                 get_real_feature_pipe(train_params),
                                 feature_params.real_cols,
                             ),
-                            ("cat", get_cat_feature_pipe(train_params), cat_cols,),
+                            (
+                                "cat",
+                                get_cat_feature_pipe(train_params),
+                                feature_params.cat_cols,
+                            ),
                         ]
                     ),
                 ),

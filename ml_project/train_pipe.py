@@ -28,28 +28,29 @@ logger.addHandler(file_handler)
 logger.addHandler(stdout_handler)
 
 
-def train_pipeline(training_pipeline_params: TrainingPipelineParams):
+def train_pipeline(pipe_params: TrainingPipelineParams):
     """
     Training model, computing metrics and storing model
-    :param training_pipeline_params: params for training
+    :param pipe_params: params for training
     :return: Nothing
     """
-    logger.info(f"start train pipeline with params {training_pipeline_params}")
+    logger.info(f"start train pipeline with params {pipe_params}")
 
-    data = pd.read_csv(DATA_DIR / training_pipeline_params.raw_data)
+    data = pd.read_csv(DATA_DIR / pipe_params.raw_data)
 
-    experiment_path = ARTIFACT_DIR / training_pipeline_params.experiment_name
+    experiment_path = ARTIFACT_DIR / pipe_params.experiment_name
     experiment_path.mkdir(parents=True, exist_ok=False)
 
     logger.info(f"data.shape is {data.shape}")
 
-    data = add_zero_features(data, training_pipeline_params.feature_params.zero_cols)
+    data = add_zero_features(data, pipe_params.feature_params.zero_cols)
+    pipe_params.feature_params.cat_cols.extend(pipe_params.feature_params.zero_cols)
 
     train_df, val_df = split_train_val_data(
         data,
-        training_pipeline_params.splitting_params,
-        training_pipeline_params.label,
-        training_pipeline_params.random_state,
+        pipe_params.splitting_params,
+        pipe_params.label,
+        pipe_params.random_state,
     )
     logger.info(f"train_df.shape is {train_df.shape}")
     logger.info(f"val_df.shape is {val_df.shape}")
@@ -58,14 +59,14 @@ def train_pipeline(training_pipeline_params: TrainingPipelineParams):
     val_df.to_csv(experiment_path / "val.csv", index=False)
 
     model = get_full_pipeline(
-        training_pipeline_params.train_params,
-        training_pipeline_params.feature_params,
-        training_pipeline_params.random_state,
+        pipe_params.train_params,
+        pipe_params.feature_params,
+        pipe_params.random_state,
     )
 
     logger.info("Start training model")
 
-    model = model.fit(train_df, train_df[training_pipeline_params.label])
+    model = model.fit(train_df, train_df[pipe_params.label])
 
     logger.info("Model training finished")
     logger.info("Start prediction")
@@ -73,8 +74,8 @@ def train_pipeline(training_pipeline_params: TrainingPipelineParams):
     predicts = predict_proba(model, val_df)
     metrics = compute_metrics(
         predicts,
-        val_df[training_pipeline_params.label],
-        threshold=training_pipeline_params.threshold,
+        val_df[pipe_params.label],
+        threshold=pipe_params.threshold,
     )
 
     logger.info("Prediction finished")
@@ -86,7 +87,7 @@ def train_pipeline(training_pipeline_params: TrainingPipelineParams):
         json.dump(metrics, metric_file)
     logger.info(f"metrics is {metrics}")
 
-    serialize_pipe(model, model_path, training_pipeline_params.feature_params)
+    serialize_pipe(model, model_path, pipe_params.feature_params)
 
 
 def main():

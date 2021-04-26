@@ -39,6 +39,7 @@ class MeanEncoder(BaseEstimator, TransformerMixin):
         :param x: data to transform
         :return: transformed data
         """
+        x = x.copy()
         for col in x.columns:
             x[col] = x[col].map(self.cols_values[col]).fillna(self.global_mean)
         return x
