@@ -1,0 +1,7 @@
+raw_data: "heart.csv"
+experiment_name: "rf"
+random_state: 1
+label: "target"
+splitting_params: non_stratify
+train_params: rf
+feature_params: without_zero

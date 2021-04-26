@@ -1,4 +1,3 @@
-import yaml
 from dataclasses import dataclass, field
 from marshmallow_dataclass import class_schema
 
@@ -24,14 +23,3 @@ class TrainingPipelineParams:
 
 
 TrainingPipelineParamsSchema = class_schema(TrainingPipelineParams)
-
-
-def read_training_pipeline_params(path: str) -> TrainingPipelineParams:
-    """
-    Reading config file and converting to train pipeline config
-    :param path: path to config
-    :return: Class with parsed configs
-    """
-    with open(path, "r") as input_stream:
-        schema = TrainingPipelineParamsSchema()
-        return schema.load(yaml.safe_load(input_stream))

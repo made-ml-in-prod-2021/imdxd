@@ -1,8 +1,10 @@
-import argparse
 import json
 import logging
+import os
 
+import hydra
 import pandas as pd
+from omegaconf import DictConfig
 
 from src import (
     add_zero_features,
@@ -13,7 +15,7 @@ from src import (
     predict_proba,
     split_train_val_data,
 )
-from src.configs import TrainingPipelineParams, read_training_pipeline_params
+from src.configs import TrainingPipelineParams, TrainingPipelineParamsSchema
 from src.constants import ARTIFACT_DIR, DATA_DIR
 
 logger = logging.getLogger("ml_project")
@@ -85,18 +87,16 @@ def train_pipeline(pipe_params: TrainingPipelineParams):
     serialize_pipe(model, model_path, pipe_params.feature_params)
 
 
-def main():
+@hydra.main(config_path="configs")
+def main(cfg: DictConfig):
     """
     Wrapper for arguments reading and start training
     :return: Nothing
     """
-    parser = argparse.ArgumentParser(prog="script for training and computing metrics")
-    parser.add_argument(
-        "--config", dest="config_path", help="path to pipeline config", required=True
-    )
-    args = parser.parse_args()
-    params = read_training_pipeline_params(args.config_path)
-    train_pipeline(params)
+    os.chdir(hydra.utils.to_absolute_path('.'))
+    schema = TrainingPipelineParamsSchema()
+    cfg = schema.load(cfg)
+    train_pipeline(cfg)
 
 
 if __name__ == "__main__":
