@@ -1,0 +1,4 @@
+model: rf
+raw_data: heart.csv
+proceed_data: rf.csv
+threshold: 0.5

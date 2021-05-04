@@ -1,0 +1,8 @@
+raw_data: "heart.csv"
+experiment_name: "gbm"
+random_state: 42
+label: "target"
+defaults:
+  - feature_params: with_zero
+  - train_params: gbm
+  - splitting_params: stratify

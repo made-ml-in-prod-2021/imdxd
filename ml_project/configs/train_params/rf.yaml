@@ -1,0 +1,4 @@
+train_params:
+  model_type: "RandomForestClassifier"
+  mean_alpha: 20
+  imput_strategy: "median"

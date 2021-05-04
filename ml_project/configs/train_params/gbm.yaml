@@ -1,0 +1,4 @@
+train_params:
+  model_type: "GradientBoostingClassifier"
+  mean_alpha: 10
+  imput_strategy: "mean"

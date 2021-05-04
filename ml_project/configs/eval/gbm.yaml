@@ -1,0 +1,4 @@
+model: gbm
+raw_data: heart.csv
+proceed_data: gbm.csv
+threshold: 0.5
