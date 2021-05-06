@@ -15,13 +15,9 @@ app.config["model"] = deserialize_pipe("model.pkl")
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
-file_handler = logging.FileHandler("logs/server.log")
-file_handler.setLevel(logging.INFO)
-file_handler.setFormatter(formatter)
 stdout_handler = logging.StreamHandler()
 stdout_handler.setLevel(logging.DEBUG)
 stdout_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
 logger.addHandler(stdout_handler)
 
 
@@ -70,7 +66,3 @@ def predict() -> Response:
     logger.info("Predictions were calculated")
     logger.info("Send data back to client")
     return jsonify([int(p) for p in predicts])
-
-
-if __name__ == '__main__':
-    app.run(host="localhost", port="7777")
