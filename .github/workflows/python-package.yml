@@ -2,7 +2,7 @@ name: Python package
 
 on:
   push:
-    branches: [ main, homework1 ]
+    branches: [ main, homework1, homework2 ]
   pull_request:
     branches: [ main ]
 
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ 3.8 ]
+        python-version: [ 3.6 ]
 
     steps:
     - uses: actions/checkout@v2
@@ -25,10 +25,15 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest
         python -m pip install -r ml_project/requirements.txt
+        python -m pip install -r online_inference/requirements.txt
     - name: Lint with flake8
       run: |
         flake8 . --count --max-line-length=127 --statistics
-    - name: Test with pytest
+    - name: Test ml_project with pytest
       run: |
         cd ml_project
+        python -m pytest
+    - name: Test online_inference with pytest
+      run: |
+        cd ./online_inference
         python -m pytest
