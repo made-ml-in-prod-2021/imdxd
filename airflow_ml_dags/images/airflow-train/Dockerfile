@@ -1,4 +1,4 @@
-FROM mlflow-docker:latest
+FROM python:3.7-slim-stretch
 
 COPY train.py /train.py
 COPY requirements.txt /requirements.txt

@@ -19,24 +19,28 @@ services:
       - POSTGRES_USER=airflow
       - POSTGRES_PASSWORD=airflow
       - POSTGRES_DB=airflow
+    restart: always
     ports:
       - "5432:5432"
     volumes:
       - ./airflow_db:/var/lib/postgresql
 
-  mysql:
+  scheduler:
+    build:
+      context: images/airflow-docker
+      args:
+        AIRFLOW_BASE_IMAGE: *airflow_image
+    image: airflow-docker
     restart: always
-    image: mysql/mysql-server:5.7.28
-    container_name: mlflow_db
-    ports:
-      - "3306:3306"
-    environment:
-      - MYSQL_DATABASE=mlflow
-      - MYSQL_USER=mlflow
-      - MYSQL_PASSWORD=mlflow
-      - MYSQL_ROOT_PASSWORD=mlflow
+    depends_on:
+      - postgres
     volumes:
-      - ./mlflow_db:/var/lib/mysql
+      - logs:/opt/airflow/logs
+      - ./dags/:/opt/airflow/dags/
+      - ./data/:/opt/airflow/data/
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment: *airflow_environment
+    command: scheduler
 
   init:
     build:
@@ -66,34 +70,6 @@ services:
     environment: *airflow_environment
     command: webserver
 
-  mlflow:
-    build:
-      context: images/mlflow-docker
-    image: mlflow-docker
-    restart: always
-    ports:
-      - "5000:5000"
-    command: mlflow server --host 0.0.0.0 --port 5000 --default-artifact-root /artifacts --backend-store-uri mysql+pymysql://mlflow:mlflow@mysql:3306/mlflow
-
-
-  scheduler:
-    build:
-      context: images/airflow-docker
-      args:
-        AIRFLOW_BASE_IMAGE: *airflow_image
-    image: airflow-docker
-
-    restart: always
-    depends_on:
-      - postgres
-    volumes:
-      - logs:/opt/airflow/logs
-      - ./dags/:/opt/airflow/dags/
-      - ./data/:/opt/airflow/data/
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment: *airflow_environment
-    command: scheduler
-
   airflow-upload:
     build:
       context: images/airflow-upload
@@ -116,6 +92,18 @@ services:
     build:
       context: images/airflow-train
     image: airflow-train
+    restart: "no"
+
+  airflow-validate:
+    build:
+      context: images/airflow-validate
+    image: airflow-validate
+    restart: "no"
+
+  airflow-predict:
+    build:
+      context: images/airflow-predict
+    image: airflow-predict
     restart: "no"
 
 

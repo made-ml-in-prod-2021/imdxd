@@ -14,9 +14,10 @@ default_args = {
 with DAG(
         "upload",
         default_args=default_args,
-        schedule_interval="@weekly",
+        schedule_interval="@daily",
         start_date=days_ago(7),
 ) as dag:
+
     download = DockerOperator(
         image="airflow-upload",
         command="/data/raw/{{ ds }}",

@@ -1,4 +1,5 @@
 import os
+from shutil import copyfile
 
 import click
 import numpy as np
@@ -21,11 +22,13 @@ def preprocess_data(input_dir: str, output_dir: str):
     """
     input_data_path = os.path.join(input_dir, DATA_FILE_NAME)
     input_target_path = os.path.join(input_dir, TARGET_FILE_NAME)
-    os.makedirs(output_dir, exist_ok=True)
+    output_target_path = os.path.join(output_dir, TARGET_FILE_NAME)
     output_path = os.path.join(output_dir, DATA_FILE_NAME)
+    os.makedirs(output_dir, exist_ok=True)
+
     data = pd.read_csv(input_data_path)
-    target = pd.read_csv(input_target_path)
-    data[LABEL_COL] = target[LABEL_COL]
+    if os.path.isfile(input_target_path):
+        copyfile(input_target_path, output_target_path)
     data[f"zero_{ZERO_COL}"] = (data[ZERO_COL] == 0).astype(np.uint8)
     data.to_csv(output_path, index=False)
 
