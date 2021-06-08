@@ -15,12 +15,18 @@ default_args = {
 with DAG(
     "predict",
     default_args=default_args,
-    schedule_interval="@weekly",
+    schedule_interval="@daily",
     start_date=days_ago(7),
 ) as dag:
-    wait = FileSensor(
+    wait_data = FileSensor(
         task_id="wait_for_prediction_data",
         filepath="/opt/airflow/data/raw/{{ ds }}/data.csv",
+        poke_interval=30,
+    )
+
+    wait_model = FileSensor(
+        task_id="wait_for_prediction_model",
+        filepath="/opt/airflow/data/models/{{ var.value.model }}/model.pkl",
         poke_interval=30,
     )
 
@@ -41,4 +47,4 @@ with DAG(
         volumes=["/home/imd/Projects/made_ml_prod/airflow_ml_dags/data:/data"],
     )
 
-    wait >> preprocess >> predict
+    [wait_data, wait_model] >> preprocess >> predict
