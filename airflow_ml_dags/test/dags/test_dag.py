@@ -1,10 +1,36 @@
 import pytest
 from airflow.models import DagBag
 
+UPLOAD_DAG_STRUCTURE = {
+    "docker-airflow-upload": set()
+}
+
+
+TRAIN_DAG_STRUCTURE = {
+    "wait_for_train_data": {"docker-airflow-preprocess-train"},
+    "wait_for_train_target": {"docker-airflow-preprocess-train"},
+    "docker-airflow-preprocess-train": {"docker-airflow-split"},
+    "docker-airflow-split": {"docker-airflow-train"},
+    "docker-airflow-train": {"docker-airflow-validate"},
+    "docker-airflow-validate": set(),
+}
+
+PREDICT_DAG_STRUCTURE = {
+    "wait_for_prediction_data": {"docker-airflow-preprocess-valid"},
+    "wait_for_prediction_model": {"docker-airflow-preprocess-valid"},
+    "docker-airflow-preprocess-valid": {"docker-airflow-predict"},
+    "docker-airflow-predict": set(),
+}
+
 
 @pytest.fixture()
 def dag_bag():
     return DagBag(dag_folder="./dags", include_examples=False)
+
+
+def _test_dag_structure(dag_tasks, ground_truth):
+    for name, task in dag_tasks.items():
+        assert task.downstream_task_ids == set(ground_truth[name])
 
 
 def test_dag_import(dag_bag):
@@ -17,6 +43,7 @@ def test_upload_dag(dag_bag):
     assert upload_dag.schedule_interval == "@daily", "Wrong schedule interval"
     assert len(upload_dag_tasks) == 1
     assert "docker-airflow-upload" in upload_dag_tasks
+    _test_dag_structure(upload_dag_tasks, UPLOAD_DAG_STRUCTURE)
 
 
 def test_train_dag(dag_bag):
@@ -30,32 +57,7 @@ def test_train_dag(dag_bag):
     assert "docker-airflow-split" in train_dag_tasks
     assert "docker-airflow-train" in train_dag_tasks
     assert "docker-airflow-validate" in train_dag_tasks
-    assert len(train_dag_tasks["wait_for_train_data"].upstream_list) == 0
-    assert len(train_dag_tasks["wait_for_train_target"].upstream_list) == 0
-    assert len(train_dag_tasks["docker-airflow-preprocess-train"].upstream_list) == 2
-    assert len(train_dag_tasks["docker-airflow-split"].upstream_list) == 1
-    assert len(train_dag_tasks["docker-airflow-train"].upstream_list) == 1
-    assert len(train_dag_tasks["docker-airflow-validate"].upstream_list) == 1
-    assert (
-            "wait_for_train_data"
-            in train_dag_tasks["docker-airflow-preprocess-train"].upstream_task_ids
-        )
-    assert (
-            "wait_for_train_target"
-            in train_dag_tasks["docker-airflow-preprocess-train"].upstream_task_ids
-    )
-    assert (
-            "docker-airflow-preprocess-train"
-            in train_dag_tasks["docker-airflow-split"].upstream_task_ids
-    )
-    assert (
-            "docker-airflow-split"
-            in train_dag_tasks["docker-airflow-train"].upstream_task_ids
-    )
-    assert (
-            "docker-airflow-train"
-            in train_dag_tasks["docker-airflow-validate"].upstream_task_ids
-    )
+    _test_dag_structure(train_dag_tasks, TRAIN_DAG_STRUCTURE)
 
 
 def test_predict_dag(dag_bag):
@@ -67,19 +69,4 @@ def test_predict_dag(dag_bag):
     assert "wait_for_prediction_model" in predict_dag_tasks
     assert "docker-airflow-preprocess-valid" in predict_dag_tasks
     assert "docker-airflow-predict" in predict_dag_tasks
-    assert len(predict_dag_tasks["wait_for_prediction_data"].upstream_list) == 0
-    assert len(predict_dag_tasks["wait_for_prediction_model"].upstream_list) == 0
-    assert len(predict_dag_tasks["docker-airflow-predict"].upstream_list) == 1
-    assert len(predict_dag_tasks["docker-airflow-preprocess-valid"].upstream_list) == 2
-    assert (
-        "wait_for_prediction_data"
-        in predict_dag_tasks["docker-airflow-preprocess-valid"].upstream_task_ids
-    )
-    assert (
-        "wait_for_prediction_model"
-        in predict_dag_tasks["docker-airflow-preprocess-valid"].upstream_task_ids
-    )
-    assert (
-        "docker-airflow-preprocess-valid"
-        in predict_dag_tasks["docker-airflow-predict"].upstream_task_ids
-    )
+    _test_dag_structure(predict_dag_tasks, PREDICT_DAG_STRUCTURE)
