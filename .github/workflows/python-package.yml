@@ -26,6 +26,7 @@ jobs:
         python -m pip install flake8 pytest
         python -m pip install -r ml_project/requirements.txt
         python -m pip install -r online_inference/requirements.txt
+        python -m pip install -r airflow_ml_dags/requirements.txt
     - name: Lint with flake8
       run: |
         flake8 . --count --max-line-length=127 --statistics
