@@ -1,10 +1,9 @@
-import pytest
-from airflow.models import DagBag
 from unittest.mock import patch
 
-UPLOAD_DAG_STRUCTURE = {
-    "docker-airflow-upload": set()
-}
+import pytest
+from airflow.models import DagBag
+
+UPLOAD_DAG_STRUCTURE = {"docker-airflow-upload": set()}
 
 
 TRAIN_DAG_STRUCTURE = {
