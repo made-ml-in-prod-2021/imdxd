@@ -1,8 +1,9 @@
 from datetime import timedelta
 
 from airflow import DAG
-from airflow.sensors.filesystem import FileSensor
+from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
+from airflow.sensors.filesystem import FileSensor
 from airflow.utils.dates import days_ago
 
 default_args = {
@@ -13,6 +14,8 @@ default_args = {
     "retries": 1,
     "retry_delay": timedelta(minutes=5),
 }
+
+OUTPUT_DIR = Variable.get("OUTPUT_DIR")
 
 with DAG(
     "predict",
@@ -37,7 +40,7 @@ with DAG(
         command="--input_dir /data/raw/{{ ds }} --output_dir /data/proceed/{{ ds }}",
         task_id="docker-airflow-preprocess-valid",
         do_xcom_push=False,
-        volumes=["/home/imd/Projects/made_ml_prod/airflow_ml_dags/data:/data"],
+        volumes=[f"{OUTPUT_DIR}:/data"],
     )
 
     predict = DockerOperator(
@@ -46,7 +49,7 @@ with DAG(
         "--model_dir /data/models/{{ var.value.model }}",
         task_id="docker-airflow-predict",
         do_xcom_push=False,
-        volumes=["/home/imd/Projects/made_ml_prod/airflow_ml_dags/data:/data"],
+        volumes=[f"{OUTPUT_DIR}:/data"],
     )
 
     [wait_data, wait_model] >> preprocess >> predict
