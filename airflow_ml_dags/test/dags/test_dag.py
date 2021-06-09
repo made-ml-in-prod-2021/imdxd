@@ -1,5 +1,6 @@
 import pytest
 from airflow.models import DagBag
+from unittest.mock import patch
 
 UPLOAD_DAG_STRUCTURE = {
     "docker-airflow-upload": set()
@@ -24,7 +25,9 @@ PREDICT_DAG_STRUCTURE = {
 
 
 @pytest.fixture()
-def dag_bag():
+@patch("airflow.models.Variable.get")
+def dag_bag(var_patch):
+    var_patch.return_value = ""
     return DagBag(dag_folder="./dags", include_examples=False)
 
 
