@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: online-inference-ml-replicaset
+  labels:
+    app: online-inference-ml-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: webserver
+  template:
+    metadata:
+      labels:
+        tier: webserver
+    spec:
+      containers:
+        - image: imdxd/webserver:v2
+          name: online-inference-ml-replicaset
+          ports:
+            - containerPort: 4000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4000
+            initialDelaySeconds: 15
+            periodSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4000
+            initialDelaySeconds: 3
+            periodSeconds: 3

@@ -1,5 +1,7 @@
 import logging
+import time
 from typing import Dict, List, Union
+from threading import Thread
 
 import pandas as pd
 from flask import Flask, Response, request, make_response, jsonify
@@ -10,7 +12,6 @@ NUMERIC = Union[int, float]
 
 app = Flask(__name__)
 app.config["model"] = deserialize_pipe("model.pkl")
-
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -77,3 +78,17 @@ def predict() -> Response:
 @app.route("/health")
 def health():
     return make_response("OK", 200)
+
+
+def stop():
+    time.sleep(60)
+    raise OSError("Application stop")
+
+
+if __name__ == "__main__":
+    time.sleep(30)
+    thread = Thread(
+        target=app.run, kwargs={"host": "0.0.0.0", "port": 4000}, daemon=True
+    )
+    thread.start()
+    stop()

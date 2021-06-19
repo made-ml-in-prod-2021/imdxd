@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: online-inference-ml
+  name: online-inference-ml-resources
   labels:
-    app: online-inference-ml
+    app: online-inference-ml-resources
 spec:
   containers:
-    - image: imdxd/webserver:latest
-      name: online-inference-ml
+    - image: imdxd/webserver:v1
+      name: online-inference-ml-resources
       ports:
         - containerPort: 4000
       resources:
