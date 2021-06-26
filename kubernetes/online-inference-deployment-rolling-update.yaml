@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: online-inference-ml-deployment
+  labels:
+    app: online-inference-ml-deployment
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 3
+  selector:
+    matchLabels:
+      tier: webserver
+  template:
+    metadata:
+      labels:
+        tier: webserver
+    spec:
+      containers:
+        - image: imdxd/webserver:v1
+          name: online-inference-ml-deployment
+          ports:
+            - containerPort: 4000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4000
+            initialDelaySeconds: 15
+            periodSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4000
+            initialDelaySeconds: 3
+            periodSeconds: 3
